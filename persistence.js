@@ -64,14 +64,14 @@ LevelPersistence.prototype.storeRetained = function (packet, cb) {
 }
 
 LevelPersistence.prototype.createRetainedStream = function (pattern) {
-  var matcher = new Qlobber(QlobberOpts)
-  matcher.add(pattern, true)
+  var m = new Qlobber(QlobberOpts)
+  m.add(pattern, true)
   return this._db.createValueStream({
     gt: RETAINED,
     lt: RETAINED + '\xff',
     valueEncoding: msgpack
   }).pipe(through({ objectMode: true }, function (packet, enc, cb) {
-    if (matcher.match(packet.topic).length > 0) {
+    if (m.match(packet.topic).length > 0) {
       cb(null, packet, enc, cb)
     }
   }))
